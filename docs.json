@@ -24,8 +24,7 @@
         ]
       },
       {
-        "tab": "API reference",
-        "openapi": "api-reference/openapi.json",
+        "tab": "API Docs",
         "groups": [
           {
             "group": "Overview",
@@ -53,6 +52,10 @@
             "pages": ["api-reference/endpoint/mcp-bots"]
           }
         ]
+      },
+      {
+        "tab": "API reference",
+        "openapi": "api-reference/openapi.json"
       }
     ],
     "global": {

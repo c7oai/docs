@@ -25,6 +25,7 @@
       },
       {
         "tab": "API reference",
+        "openapi": "openapi.json",
         "groups": [
           {
             "group": "Overview",

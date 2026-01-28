@@ -18,13 +18,13 @@
             "pages": ["index", "quickstart"]
           },
           {
-            "group": "Customization",
-            "pages": ["essentials/settings", "essentials/navigation"]
+            "group": "AI Assistants",
+            "pages": ["assistants/enable-assistant", "assistants/enable-assistant-shopify-store", "assistants/shopify-attribution"]
           }
         ]
       },
       {
-        "tab": "API Docs",
+        "tab": "API",
         "groups": [
           {
             "group": "Overview",

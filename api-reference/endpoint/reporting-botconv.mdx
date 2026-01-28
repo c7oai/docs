@@ -1,0 +1,87 @@
+---
+title: 'Export bot conversations (reporting)'
+description: 'Retrieve bot conversations in a reporting-friendly format with cursor pagination.'
+openapi: 'GET /api/v1/reporting/tenants/{tenantId}/botconv'
+---
+
+This endpoint returns bot conversations as reporting rows (no message content), suitable for exporting large time ranges.
+
+## Date range filtering
+
+You can specify a time range using either:
+
+- `range=last_day|last_week|last_month`, or
+- `from` / `to` (ISO 8601 or epoch millis)
+
+If you do not supply a range, the default is `range=last_day`.
+
+## Pagination (cursor)
+
+Results are paginated using an opaque cursor:
+
+- Use `limit` to control page size (default `1000`, max `5000`)
+- Use `cursor` to fetch the next page (from `cursor.next`)
+- When you supply `cursor`, **do not** also supply `range`, `from`, or `to`
+
+### Example: first page
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+
+curl -sS \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/botconv?range=last_week&limit=1000"
+```
+
+### Example: next page
+
+```bash
+export CURSOR="PASTE_cursor.next_HERE"
+
+curl -sS -G \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  --data-urlencode "cursor=$CURSOR" \
+  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/botconv"
+```
+
+### Example: fetch all pages (Node.js)
+
+```js
+const baseUrl = 'https://platform.crescendo.ai';
+
+async function fetchAllBotconv({ tenantId, apiKey, limit = 1000, range = 'last_week' }) {
+  const allRows = [];
+
+  // First request can use range/from/to
+  let cursor = null;
+  let first = true;
+
+  while (true) {
+    const url = new URL(`${baseUrl}/api/v1/reporting/tenants/${tenantId}/botconv`);
+
+    if (first) {
+      url.searchParams.set('range', range);
+      url.searchParams.set('limit', String(limit));
+      first = false;
+    } else {
+      url.searchParams.set('cursor', cursor);
+      url.searchParams.set('limit', String(limit));
+    }
+
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+
+    const body = await res.json();
+    allRows.push(...(body.data ?? []));
+
+    cursor = body?.cursor?.next;
+    if (!cursor) break;
+  }
+
+  return allRows;
+}
+```
+

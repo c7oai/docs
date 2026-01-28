@@ -1,0 +1,43 @@
+---
+title: 'Get VOC recording status'
+description: 'Poll the latest known status for a VOC recording job.'
+openapi: 'GET /api/v1/voc/tenants/{tenantId}/recording/{jobId}/status'
+---
+
+Use this endpoint to poll the status of a previously uploaded recording.
+
+## Status values
+
+- `started`
+- `completed`
+- `failed`
+
+## Example: poll with curl
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+export VOC_JOB_ID="job-voc-001"
+
+curl -sS \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  "https://platform.crescendo.ai/api/v1/voc/tenants/$CRESCENDO_TENANT_ID/recording/$VOC_JOB_ID/status"
+```
+
+## Example: poll until completion (bash)
+
+```bash
+while true; do
+  body="$(curl -sS -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+    "https://platform.crescendo.ai/api/v1/voc/tenants/$CRESCENDO_TENANT_ID/recording/$VOC_JOB_ID/status")"
+
+  status="$(node -e "console.log(JSON.parse(process.argv[1]).status)" "$body")"
+  echo "status=$status"
+
+  if [ "$status" = "completed" ] || [ "$status" = "failed" ]; then
+    break
+  fi
+  sleep 5
+done
+```
+

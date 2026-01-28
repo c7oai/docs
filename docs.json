@@ -15,17 +15,11 @@
         "groups": [
           {
             "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart"
-            ]
+            "pages": ["index", "quickstart"]
           },
           {
             "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
+            "pages": ["essentials/settings", "essentials/navigation"]
           }
         ]
       },
@@ -33,19 +27,29 @@
         "tab": "API reference",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Overview",
+            "pages": ["api-reference/introduction"]
+          },
+          {
+            "group": "Provisioning",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/endpoint/provisioning-get-document",
+              "api-reference/endpoint/provisioning-get-collection",
+              "api-reference/endpoint/provisioning-post-replace",
+              "api-reference/endpoint/provisioning-put-update"
             ]
           },
           {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
+            "group": "Reporting",
+            "pages": ["api-reference/endpoint/reporting-botconv", "api-reference/endpoint/reporting-vocconv"]
+          },
+          {
+            "group": "VOC",
+            "pages": ["api-reference/endpoint/voc-upload-recording", "api-reference/endpoint/voc-recording-status"]
+          },
+          {
+            "group": "MCP",
+            "pages": ["api-reference/endpoint/mcp-bots"]
           }
         ]
       }
@@ -78,16 +82,7 @@
     ]
   },
   "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+    "options": ["copy", "view", "chatgpt", "claude", "perplexity", "mcp", "cursor", "vscode"]
   },
   "footer": {
     "socials": {
@@ -95,3 +90,4 @@
     }
   }
 }
+

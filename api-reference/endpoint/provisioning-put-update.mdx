@@ -1,0 +1,27 @@
+---
+title: 'Update a provisioning document'
+description: 'PUT merges fields into an existing document (404 if missing).'
+openapi: 'PUT /api/v1/provisioning/tenants/{tenantId}/{collection}/{docId}'
+---
+
+PUT requests **merge** fields into an existing document:
+
+- Only the provided fields are updated
+- Existing fields not mentioned in the payload are preserved
+- If the document does not exist, the API returns **404 NotFound**
+
+The API stamps `updated` (epoch millis) and `updatedBy` automatically.
+
+## Example: update a user role
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+
+curl -sS -X PUT \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"role":"owner"}' \
+  "https://platform.crescendo.ai/api/v1/provisioning/tenants/$CRESCENDO_TENANT_ID/users/user-123"
+```
+

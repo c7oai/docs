@@ -1,0 +1,27 @@
+---
+title: 'List a provisioning collection'
+description: 'Read a tenant-scoped collection and receive `{ id, data }` entries.'
+openapi: 'GET /api/v1/provisioning/tenants/{tenantId}/{collection}'
+---
+
+Use this endpoint to list documents in a collection.
+
+## Response shape
+
+Collection reads return an array of entries:
+
+```json
+[{ "id": "doc-id", "data": { "any": "fields" } }]
+```
+
+## Example: list users
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+
+curl -sS \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  "https://platform.crescendo.ai/api/v1/provisioning/tenants/$CRESCENDO_TENANT_ID/users"
+```
+

@@ -1,0 +1,31 @@
+---
+title: 'Get a provisioning document'
+description: 'Read a single tenant-scoped provisioning resource.'
+openapi: 'GET /api/v1/provisioning/tenants/{tenantId}/{collection}/{docId}'
+---
+
+Use this endpoint to read a single resource by document ID.
+
+## Example: get a user
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+
+curl -sS \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  "https://platform.crescendo.ai/api/v1/provisioning/tenants/$CRESCENDO_TENANT_ID/users/user-001"
+```
+
+## Versioned resources
+
+Some resources support a `versions.current` object in the base document response. For example, bots may include a `versions.current.spec` object.
+
+If you need the raw current version document directly, request:
+
+```bash
+curl -sS \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  "https://platform.crescendo.ai/api/v1/provisioning/tenants/$CRESCENDO_TENANT_ID/bots/bot-001/versions/current"
+```
+

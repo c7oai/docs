@@ -1,33 +1,116 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'API Introduction'
+description: 'Authentication, authorization, and conventions for the Crescendo Platform API.'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Base URL
 
-## Welcome
+All API requests use:
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+- `https://platform.crescendo.ai`
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+The current API version prefix is:
+
+- `/api/v1`
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+Authenticate every `/api/v1/*` request with a tenant API key.
+
+### Authorization header (recommended)
+
+Send the API key using the Bearer scheme:
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+
+curl -sS \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  "https://platform.crescendo.ai/api/v1/provisioning/tenants/$CRESCENDO_TENANT_ID"
+```
+
+### `bearer_token` query parameter (supported)
+
+Some integrations may need to provide the token as a query parameter:
+
+```bash
+curl -sS \
+  "https://platform.crescendo.ai/api/v1/provisioning/tenants/$CRESCENDO_TENANT_ID?bearer_token=$CRESCENDO_API_KEY"
+```
+
+<Note>
+  Prefer the `Authorization` header whenever possible. Query parameters can be logged or stored in browser history.
+</Note>
+
+## Tenant scoping
+
+Most API routes include `tenants/{tenantId}` in the path. API keys are tenant-scoped:
+
+- Requests for a different tenant will be rejected.
+- Each key has a list of scopes that controls which APIs and operations it can access.
+
+## Authorization (scopes)
+
+Scopes are evaluated using:
+
+- The API prefix (first segment after `/api/v1/`), for example `provisioning`, `reporting`, `voc`, `mcp`
+- The operation type: `read` for `GET`/`HEAD`/`OPTIONS`, and `write` for everything else
+- The nested resource (the first segment after `tenants/{tenantId}/...`) for fine-grained access
+
+Common scope patterns:
+
+| API | Read scopes (examples) | Write scopes (examples) |
+| --- | --- | --- |
+| Provisioning | `provisioning:*`, `provisioning:read`, `provisioning:users.read` | `provisioning:*`, `provisioning:users.*` |
+| Reporting | `reporting:*`, `reporting:read`, `reporting:botconv`, `reporting:vocconv` | Reporting endpoints are read-only |
+| VOC | `voc:*`, `voc:read` | `voc:*`, `voc:recording.*` |
+| MCP | `mcp:*`, `mcp:read`, `mcp:bots.read` | `mcp:*`, `mcp:bots.*` |
+
+## Error responses
+
+Errors use a consistent JSON shape:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+{ "code": "BadRequest", "message": "Human-readable error message" }
 ```
+
+Common error codes:
+
+- `BadRequest` (400)
+- `Unauthenticated` (401)
+- `PermissionDenied` (403)
+- `NotFound` (404)
+- `Unavailable` (503)
+
+## API conventions
+
+### Provisioning API
+
+The Provisioning API is path-based and tenant-scoped under:
+
+- `/api/v1/provisioning/tenants/{tenantId}/...`
+
+Conventions:
+
+- **GET document path** (ends with a document ID) returns a JSON object.
+- **GET collection path** (ends with a collection name) returns an array of `{ id, data }`.
+- **POST = replace**: creates a document if missing, otherwise replaces the document.
+- **PUT = merge update**: merges fields into an existing document (404 if the document does not exist).
+- **Audit fields on writes**: `updated` (epoch millis) and `updatedBy` are stamped automatically.
+
+Some provisioning resources support a `versions.current` object to represent the active version for that resource.
+
+### Reporting API
+
+Reporting endpoints return a stable envelope:
+
+```json
+{ "total": 123, "cursor": { "next": "..." }, "data": [] }
+```
+
+Pagination is cursor-based. See:
+
+- `/api-reference/endpoint/reporting-botconv`
+- `/api-reference/endpoint/reporting-vocconv`
+

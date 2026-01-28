@@ -1,0 +1,37 @@
+---
+title: 'Upload a VOC recording'
+description: 'Upload an mp3/wav recording and start asynchronous VOC processing.'
+openapi: 'POST /api/v1/voc/tenants/{tenantId}/recording'
+---
+
+Upload a recording and metadata to start asynchronous VOC processing.
+
+## Requirements
+
+- Audio must be **mp3** or **wav**
+- Max size: **25 MB**
+- `metadata.id` must contain only letters, numbers, dots, dashes, or underscores
+
+## Example: upload with curl
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+
+curl -sS -X POST \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  -F "audio=@./call.mp3;type=audio/mpeg" \
+  -F 'metadata={"id":"call-123","kind":"phonecall","source":"your-system"}' \
+  "https://platform.crescendo.ai/api/v1/voc/tenants/$CRESCENDO_TENANT_ID/recording"
+```
+
+The response is `202 Accepted` and returns a job ID:
+
+```json
+{ "id": "job-voc-001" }
+```
+
+## Next: poll for status
+
+Use the returned job ID with `/api-reference/endpoint/voc-recording-status`.
+

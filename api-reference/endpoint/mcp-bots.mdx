@@ -1,0 +1,35 @@
+---
+title: 'MCP bots endpoint'
+description: 'Use the Bots MCP server over Streamable HTTP (JSON-RPC 2.0).'
+openapi: 'POST /api/v1/mcp/tenants/{tenantId}/bots'
+---
+
+This endpoint exposes the Bots MCP server over Streamable HTTP.
+
+Requests and responses use JSON-RPC 2.0. If you are building an MCP client, prefer using an MCP SDK. If you need to call the endpoint directly, you can use the examples below.
+
+## Example: list available tools
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+
+curl -sS -X POST \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":"tools","method":"tools/list"}' \
+  "https://platform.crescendo.ai/api/v1/mcp/tenants/$CRESCENDO_TENANT_ID/bots"
+```
+
+## Example: call a tool (`list_bots`)
+
+```bash
+curl -sS -X POST \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":"call-1","method":"tools/call","params":{"name":"list_bots","arguments":{"limit":50}}}' \
+  "https://platform.crescendo.ai/api/v1/mcp/tenants/$CRESCENDO_TENANT_ID/bots"
+```
+

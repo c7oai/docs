@@ -1,0 +1,38 @@
+---
+title: 'Create or replace a provisioning document'
+description: 'POST creates a new document or fully replaces an existing document.'
+openapi: 'POST /api/v1/provisioning/tenants/{tenantId}/{collection}/{docId}'
+---
+
+POST requests **replace** the document at the target path:
+
+- If the document does not exist, the API returns **201 Created**
+- If the document exists, the API returns **200 OK** and the previous document content is replaced
+
+The API stamps `updated` (epoch millis) and `updatedBy` automatically.
+
+## Example: create a user
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+
+curl -sS -X POST \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"new.user@example.com","role":"viewer"}' \
+  "https://platform.crescendo.ai/api/v1/provisioning/tenants/$CRESCENDO_TENANT_ID/users/user-123"
+```
+
+## Example: write a versioned resource
+
+For versioned resources, you can include `versions.current` in the payload:
+
+```bash
+curl -sS -X POST \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Support Bot","versions":{"current":{"spec":{"greeting":"hello"}}}}' \
+  "https://platform.crescendo.ai/api/v1/provisioning/tenants/$CRESCENDO_TENANT_ID/bots/bot-002"
+```
+

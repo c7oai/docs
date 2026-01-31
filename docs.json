@@ -19,7 +19,13 @@
           },
           {
             "group": "AI Assistants",
-            "pages": ["assistants/enable-assistant", "assistants/enable-assistant-shopify-store", "assistants/shopify-attribution"]
+            "pages": [
+              "assistants/introduction",
+              "assistants/enable-assistant",
+              "assistants/enable-assistant-shopify-store",
+              "assistants/shopify-attribution",
+              "assistants/version-control"
+            ]
           }
         ]
       },

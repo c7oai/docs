@@ -1,0 +1,145 @@
+---
+title: 'AI Assistant Version Control'
+description: 'Manage changes to your AI Assistants safely with version tracking, draft mode, comparison tools, and rollback capabilities'
+icon: 'code-branch'
+---
+
+The AI Assistant Version Control feature allows you to manage changes to your AI Assistants safely and efficiently. You can track version history, compare changes between versions, draft edits without affecting the live assistant, and roll back to previous configurations if needed.
+
+## Overview
+
+Version control introduces a new workflow for managing your AI Assistants:
+
+- **Version History**: View a log of all published versions and their release notes
+- **Safe Editing**: Make changes in a "Draft" mode before publishing to production
+- **Diff Comparison**: Visually compare changes between any two versions
+- **Rollback**: Restore any previous version of your assistant instantly
+
+## Accessing Version History
+
+To view the version history of an assistant:
+
+1. Navigate to the AI Assistants list in your dashboard (`/bots/list`)
+2. Locate the specific assistant you wish to manage
+3. Click on the **version number** (e.g., `v2`, `v3`) in the **Version** column
+
+**Alternative method:**
+- While inside the Assistant Editor (`/bots/editor/:id`), click the **version dropdown menu** in the top toolbar
+
+This will open the **Release Notes** panel, showing a changelog of what was modified in the current and previous versions.
+
+<Tip>
+The version number in the assistants list provides quick access to the complete version history for each assistant.
+</Tip>
+
+## Comparing Versions
+
+Before publishing or restoring, you can compare versions to see exactly what changed.
+
+1. Open the Assistant you want to view in the Assistant Editor
+2. Click the **Compare** button in the top right corner
+3. Select the version you want to compare against the current version from the dropdown menu (e.g., **Current v2** vs **v1**)
+
+### Understanding the Comparison View
+
+The **Comparison View** highlights changes in a "Diff" format:
+
+- **Added**: Highlighted in green
+- **Removed**: Highlighted in red
+- **Modified**: Shows the "Before" and "After" values side-by-side
+
+### Filtering Changes
+
+You can filter changes by:
+- **Major**: Critical logic changes (settings, actions, handoff criteria)
+- **Standard**: All updates including minor changes
+
+<Note>
+Use the Major filter to quickly identify significant changes that could impact assistant behavior.
+</Note>
+
+## Editing and Creating New Versions
+
+To make changes to an active assistant, you must create a new draft.
+
+1. Open the desired AI Assistant in the Assistant Editor
+2. Click the **Edit** button in the top toolbar
+   - **Note**: The current live version is in "Read-Only Mode" until you click Edit
+3. This creates a **Draft** (e.g., `Draft v3`)
+4. Make your changes to:
+   - Settings (name, model, temperature, etc.)
+   - Knowledge base links
+   - Handoff criteria
+   - Actions and integrations
+
+**Example**: Updating the "Handoff Criteria" to include a new rule for unhappy users.
+
+5. Your changes are saved to the draft automatically but will **not be live** until published
+
+<Warning>
+Draft changes are not visible to your customers. The live version continues to operate unchanged until you publish the draft.
+</Warning>
+
+## Publishing a New Version
+
+Once your draft is ready:
+
+1. Click the **Publish** button in the top right corner of the Assistant Editor
+2. A dialog will appear prompting you to review or enter **Release Notes**
+   - The system can **auto-generate** release notes based on your changes
+   - You can manually edit these notes to add context for your team
+3. Review the release notes and click **Publish [Version Number]** (e.g., "Publish v3")
+4. The new version is now **live** and the version counter will increment (e.g., from v2 to v3)
+
+<Tip>
+Release notes help your team understand what changed in each version. Add context about why changes were made to make collaboration easier.
+</Tip>
+
+## Restoring Previous Versions
+
+If you need to revert to an older configuration:
+
+1. Go to the **Version History** menu (click the version number dropdown in the Assistant Editor)
+2. Find the version you wish to restore in the history list
+3. Click the **Restore** button next to that version
+4. Select **"Create draft from this version"**
+5. This will create a new draft based exactly on the old version's settings
+6. Review the draft and [publish it](#publishing-a-new-version) as the new current version
+
+<Warning>
+Restoring a version doesn't directly revert the live assistant. It creates a draft that you must review and publish, ensuring you can verify the changes before they go live.
+</Warning>
+
+## Best Practices
+
+### Test Before Publishing
+Always test your draft changes thoroughly before publishing. Consider:
+- Testing with sample queries
+- Reviewing handoff criteria
+- Checking integration connections
+- Verifying knowledge base links
+
+### Use Descriptive Release Notes
+Write clear release notes that explain:
+- What changed and why
+- Any potential impact on customer interactions
+- Dependencies or related changes
+
+### Compare Before Publishing
+Use the comparison tool to review all changes before publishing, especially for:
+- Major updates to assistant behavior
+- Changes to handoff criteria
+- Modifications to integrations
+
+### Regular Version Reviews
+Periodically review your version history to:
+- Identify patterns in changes
+- Document successful configurations
+- Learn from issues that required rollbacks
+
+## Related Resources
+
+- [Introduction to AI Assistants](/assistants/introduction) - Learn about AI Assistant capabilities
+- [Enable Assistant on Website](/assistants/enable-assistant) - Deploy your assistant
+- [Enable Assistant on Shopify](/assistants/enable-assistant-shopify-store) - Shopify integration guide
+

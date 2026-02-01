@@ -420,8 +420,8 @@
     "/api/v1/reporting/tenants/{tenantId}/assistant/conversations": {
       "get": {
         "tags": ["Reporting"],
-        "summary": "List bot conversations (reporting format)",
-        "description": "Returns bot conversations in a reporting-friendly row format (no message content, cursor pagination).",
+        "summary": "List assistant conversations (reporting format)",
+        "description": "Returns assistant conversations in a reporting-friendly row format (no message content, cursor pagination).",
         "operationId": "listReportingBotConversations",
         "parameters": [
           { "$ref": "#/components/parameters/tenantId" },
@@ -830,7 +830,7 @@
       },
       "BotConversationRow": {
         "type": "object",
-        "description": "Reporting row for a bot conversation. Keys are optimized for reporting/exports.",
+        "description": "Reporting row for a assistant conversation. Keys are optimized for reporting/exports.",
         "properties": {
           "ID": { "type": ["string", "null"] },
           "TenantID": { "type": ["string", "null"] },

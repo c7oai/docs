@@ -63,15 +63,10 @@ Common scope patterns:
 | API | Read scopes (examples) | Write scopes (examples) |
 | --- | --- | --- |
 | Provisioning | `provisioning:*`, `provisioning:read`, `provisioning:users.read` | `provisioning:*`, `provisioning:users.*` |
-| Reporting | `reporting:*`, `reporting:read`, `reporting:botconv`, `reporting:vocconv` | Reporting endpoints are read-only |
+| Reporting | `reporting:*`, `reporting:read` | Reporting endpoints are read-only |
 | VOC | `voc:*`, `voc:read` | `voc:*`, `voc:recording.*` |
 | MCP | `mcp:*`, `mcp:read`, `mcp:bots.read` | `mcp:*`, `mcp:bots.*` |
 
-<Note>
-  Reporting scopes use `botconv` and `vocconv` resource names:
-  `reporting:botconv` authorizes `GET /api/v1/reporting/tenants/{tenantId}/assistant/conversations`, and
-  `reporting:vocconv` authorizes `GET /api/v1/reporting/tenants/{tenantId}/voc/conversations`.
-</Note>
 
 ## Error responses
 

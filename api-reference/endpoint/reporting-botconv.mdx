@@ -1,10 +1,10 @@
 ---
-title: 'Export bot conversations (reporting)'
-description: 'Retrieve bot conversations in a reporting-friendly format with cursor pagination.'
+title: 'Export Assistant conversations (reporting)'
+description: 'Retrieve Assistant conversations in a reporting-friendly format with cursor pagination.'
 openapi: 'GET /api/v1/reporting/tenants/{tenantId}/assistant/conversations'
 ---
 
-This endpoint returns bot conversations as reporting rows (no message content), suitable for exporting large time ranges.
+This endpoint returns Assistant conversations as reporting rows (no message content), suitable for exporting large time ranges.
 
 ## Date range filtering
 
@@ -50,7 +50,7 @@ curl -sS -G \
 ```js
 const baseUrl = 'https://platform.crescendo.ai';
 
-async function fetchAllBotconv({ tenantId, apiKey, limit = 1000, range = 'last_week' }) {
+async function fetchAllAssistantConv({ tenantId, apiKey, limit = 1000, range = 'last_week' }) {
   const allRows = [];
 
   // First request can use range/from/to

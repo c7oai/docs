@@ -1,7 +1,7 @@
 ---
 title: 'Export bot conversations (reporting)'
 description: 'Retrieve bot conversations in a reporting-friendly format with cursor pagination.'
-openapi: 'GET /api/v1/reporting/tenants/{tenantId}/botconv'
+openapi: 'GET /api/v1/reporting/tenants/{tenantId}/assistant/conversations'
 ---
 
 This endpoint returns bot conversations as reporting rows (no message content), suitable for exporting large time ranges.
@@ -31,7 +31,7 @@ export CRESCENDO_API_KEY="YOUR_API_KEY"
 
 curl -sS \
   -H "Authorization: Bearer $CRESCENDO_API_KEY" \
-  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/botconv?range=last_week&limit=1000"
+  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/assistant/conversations?range=last_week&limit=1000"
 ```
 
 ### Example: next page
@@ -42,7 +42,7 @@ export CURSOR="PASTE_cursor.next_HERE"
 curl -sS -G \
   -H "Authorization: Bearer $CRESCENDO_API_KEY" \
   --data-urlencode "cursor=$CURSOR" \
-  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/botconv"
+  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/assistant/conversations"
 ```
 
 ### Example: fetch all pages (Node.js)
@@ -58,7 +58,7 @@ async function fetchAllBotconv({ tenantId, apiKey, limit = 1000, range = 'last_w
   let first = true;
 
   while (true) {
-    const url = new URL(`${baseUrl}/api/v1/reporting/tenants/${tenantId}/botconv`);
+    const url = new URL(`${baseUrl}/api/v1/reporting/tenants/${tenantId}/assistant/conversations`);
 
     if (first) {
       url.searchParams.set('range', range);
@@ -84,4 +84,3 @@ async function fetchAllBotconv({ tenantId, apiKey, limit = 1000, range = 'last_w
   return allRows;
 }
 ```
-

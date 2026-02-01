@@ -1,7 +1,7 @@
 ---
 title: 'Export VOC conversations (reporting)'
 description: 'Retrieve VOC conversations in a reporting-friendly format with cursor pagination.'
-openapi: 'GET /api/v1/reporting/tenants/{tenantId}/vocconv'
+openapi: 'GET /api/v1/reporting/tenants/{tenantId}/voc/conversations'
 ---
 
 This endpoint returns VOC conversations as reporting rows (no transcript content), suitable for exporting large time ranges.
@@ -31,7 +31,7 @@ export CRESCENDO_API_KEY="YOUR_API_KEY"
 
 curl -sS \
   -H "Authorization: Bearer $CRESCENDO_API_KEY" \
-  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/vocconv?range=last_month&limit=1000"
+  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/voc/conversations?range=last_month&limit=1000"
 ```
 
 ### Example: next page
@@ -42,7 +42,7 @@ export CURSOR="PASTE_cursor.next_HERE"
 curl -sS -G \
   -H "Authorization: Bearer $CRESCENDO_API_KEY" \
   --data-urlencode "cursor=$CURSOR" \
-  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/vocconv"
+  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/voc/conversations"
 ```
 
 ### Example: fetch all pages (Node.js)
@@ -57,7 +57,7 @@ async function fetchAllVocconv({ tenantId, apiKey, limit = 1000, range = 'last_m
   let first = true;
 
   while (true) {
-    const url = new URL(`${baseUrl}/api/v1/reporting/tenants/${tenantId}/vocconv`);
+    const url = new URL(`${baseUrl}/api/v1/reporting/tenants/${tenantId}/voc/conversations`);
 
     if (first) {
       url.searchParams.set('range', range);

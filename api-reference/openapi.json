@@ -417,7 +417,7 @@
         }
       }
     },
-    "/api/v1/reporting/tenants/{tenantId}/botconv": {
+    "/api/v1/reporting/tenants/{tenantId}/assistant/conversations": {
       "get": {
         "tags": ["Reporting"],
         "summary": "List bot conversations (reporting format)",
@@ -447,7 +447,7 @@
         }
       }
     },
-    "/api/v1/reporting/tenants/{tenantId}/vocconv": {
+    "/api/v1/reporting/tenants/{tenantId}/voc/conversations": {
       "get": {
         "tags": ["Reporting"],
         "summary": "List VOC conversations (reporting format)",
@@ -1001,4 +1001,3 @@
     }
   }
 }
-

@@ -67,6 +67,12 @@ Common scope patterns:
 | VOC | `voc:*`, `voc:read` | `voc:*`, `voc:recording.*` |
 | MCP | `mcp:*`, `mcp:read`, `mcp:bots.read` | `mcp:*`, `mcp:bots.*` |
 
+<Note>
+  Reporting scopes use `botconv` and `vocconv` resource names:
+  `reporting:botconv` authorizes `GET /api/v1/reporting/tenants/{tenantId}/assistant/conversations`, and
+  `reporting:vocconv` authorizes `GET /api/v1/reporting/tenants/{tenantId}/voc/conversations`.
+</Note>
+
 ## Error responses
 
 Errors use a consistent JSON shape:
@@ -113,4 +119,3 @@ Pagination is cursor-based. See:
 
 - `/api-reference/endpoint/reporting-botconv`
 - `/api-reference/endpoint/reporting-vocconv`
-

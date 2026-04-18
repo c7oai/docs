@@ -1,35 +1,380 @@
 ---
-title: 'CXM'
-description: 'CXM Display inline code and code blocks'
-icon: 'code'
+title: "Crescendo CXM"
+description: "User guide for Crescendo CXM as an AI-first, AI-native CCaaS and CRM."
 ---
 
-## Inline code
+# Crescendo CXM
 
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
+Crescendo CXM is an AI-first, AI-native CCaaS and CRM built around one core object: the conversation. It brings live chat, voice, email, customer context, AI handling, and human agent operations into one workspace so teams can run customer support from a single system.
 
-```
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
-```
+CXM is designed to let AI handle the large share of routine work first, then route the right conversations to the right human team or agent when human judgment is needed.
 
-## Code blocks
+## Core Concepts
 
-Use [fenced code blocks](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) by enclosing code in three backticks and follow the leading ticks with the programming language of your snippet to get syntax highlighting. Optionally, you can also write the name of your code after the programming language.
+### Conversation
 
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
+A conversation is the full customer thread for one issue or ongoing exchange. It is the record that agents and AI work from.
 
-````md
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
-````
+A single conversation can include multiple interactions across channels, such as:
+
+- a live chat session
+- a phone call
+- an email thread
+- follow-up interactions on the same issue
+
+The conversation keeps the shared context for all of that work:
+
+- customer identity
+- current status
+- current assignee
+- AI summary and analysis
+- message history
+- interaction history
+
+### Interaction
+
+An interaction is one specific live or channel event inside the conversation, such as one voice call, one chat session, or one email thread.
+
+In practice:
+
+- the conversation is the case-level thread
+- the interaction is the channel-specific session inside it
+
+### Contact
+
+A contact is the person CXM identifies across conversations and channels. Contact resolution is what lets CXM connect a new call or chat to the correct customer history.
+
+### AI Assistant
+
+An AI Assistant is the AI worker assigned to a channel entry point, such as a phone number. It answers customers first, follows business instructions, uses configured knowledge, categorizes the conversation, and decides when to hand off to a human.
+
+### Team
+
+A team is a routing and ownership group for agents. Teams are used to organize queues, route work by expertise, and give team leads a clear operational scope.
+
+### Category
+
+A category is the classification CXM uses to understand what a conversation is about, such as Billing, Refunds, Technical Support, or Account Access.
+
+Categories help CXM:
+
+- label conversations consistently
+- drive routing decisions
+- organize queues
+- report on support demand and outcomes
+
+## Roles and Access
+
+Users can have one or more roles. Roles determine what they can see, configure, and process in CXM.
+
+| Role | Typical use |
+| --- | --- |
+| `owner` | Full tenant control, including users, routing, phone management, and AI configuration. |
+| `admin` | Operational administration, user management, routing configuration, and AI Assistant management. |
+| `team lead` | Team operations, queue supervision, conversation assignment, and team-level management. |
+| `agent` | Handles routed conversations, replies to customers, and works assigned conversations. |
+| `user` | Non-agent user who can work with AI configuration and supporting workflows, but does not process routed customer conversations. |
+| `viewer` | Read-only access for oversight and reporting. |
+
+Role assignment is managed in **Settings > Users**. A user can be invited or edited there, and one person can hold multiple roles when needed.
+
+## Conversations
+
+### What a Conversation Is
+
+In CXM, the conversation is the primary unit of work. Agents do not work isolated calls or isolated chats without context. They work a conversation that already contains customer history, AI analysis, and current ownership.
+
+That means a live call is not treated as a disconnected event. It is tied to the customer, to the current issue, and to the rest of the account context in CXM.
+
+### Conversation Lifecycle
+
+Every conversation moves through a simple lifecycle:
+
+1. `Open`
+   The conversation is active and can receive customer and agent activity.
+2. `Resolved`
+   The issue appears solved, but follow-up is still expected or possible.
+3. `Closed`
+   The conversation is finalized.
+
+Operationally:
+
+- `Open` conversations are active work.
+- `Resolved` conversations stay attached to the same customer and can be reopened by meaningful follow-up.
+- `Closed` conversations are treated as finished. Future customer contact usually starts a new conversation unless an authorized user explicitly reopens the closed one.
+
+CXM keeps only one non-closed conversation for a contact at a time. This prevents the same customer issue from being split across multiple active threads.
+
+### Contact Resolution
+
+When a new interaction arrives, CXM first resolves the customer identity before it decides whether to continue an existing conversation or create a new one.
+
+Typical resolution signals include:
+
+- caller phone number for voice
+- sender identity and thread references for email
+- authenticated widget context or known visitor data for chat
+
+The result is:
+
+- if CXM finds the contact and that contact already has an open or resolved conversation, the new interaction continues that conversation
+- if CXM finds the contact but there is no non-closed conversation, CXM starts a new conversation for that contact
+- if CXM cannot match the interaction to a known contact, CXM creates a new contact and a new conversation
+
+This is what gives agents a single timeline instead of fragmented channel records.
+
+### How AI Handles a Conversation
+
+For supported entry points, the AI Assistant is the first responder.
+
+Its job is to:
+
+- greet the customer
+- resolve the request when possible
+- use configured knowledge and instructions
+- collect missing information
+- maintain conversation context
+- determine category and intent
+- decide whether the issue can stay AI-handled or needs a human
+
+If the AI Assistant can solve the issue safely, the conversation remains AI-handled. If not, the AI Assistant initiates handoff and CXM routes the conversation to a human team or agent.
+
+### How Handoff and Routing Work
+
+When handoff criteria are met, CXM creates a routing request from the active conversation state. Routing is based on:
+
+- the conversation channel
+- the detected category
+- configured team targets
+- current agent availability
+- tenant routing policy, such as round robin or least loaded
+
+At that point:
+
+1. the conversation remains the source of truth
+2. CXM creates a live routing offer
+3. the offer is delivered to an eligible ready agent
+4. the first accepted offer assigns the conversation
+
+For voice, the AI Assistant can continue holding the call until a human agent joins. For chat, the customer remains in the same conversation while routing and takeover happen in the background.
+
+## Agent Operations
+
+### Log In and Sign Out
+
+Agents start by signing in to CXM, selecting the correct tenant, and completing the configured authentication flow.
+
+Signing in gives the user access to the CXM workspace. Signing out ends the CXM application session.
+
+### Ready, Not Ready, and Off Duty
+
+Agent availability is separate from sign-in.
+
+- `Ready` means the agent is available to receive new routed work.
+- `Not ready` means the agent is signed in but should not receive new offers.
+- `Off duty` means the agent is removed from routing while still signed in to CXM.
+
+Presence is tracked separately as `online`, `away`, or `offline`.
+
+> Ready or Not ready controls routing eligibility. Sign out controls the browser session. Going off duty is operational, not the same thing as signing out.
+
+### Accepting or Rejecting a Routed Conversation
+
+When CXM routes a call or chat to an agent, the agent receives a live incoming assignment.
+
+The agent can:
+
+- `Accept` to take ownership of the conversation
+- `Decline` to return the work to routing
+
+On accept:
+
+- chat becomes assigned to that agent and opens in the conversation workspace
+- voice becomes assigned to that agent and the agent joins or takes over the live call context
+
+On decline:
+
+- the conversation remains unaccepted by that agent
+- CXM continues routing it to other eligible agents or teams
+
+If an agent is not ready, they are not considered for new routing offers.
+
+### What the Screen Pop Includes
+
+For live chat and voice offers, the incoming assignment surface includes the routing information an agent needs to make a quick accept or decline decision.
+
+The screen pop includes:
+
+- channel type, such as `Chat` or `Voice`
+- the conversation identifier
+- the number of additional waiting offers, when more than one is pending
+- detected category
+- detected intent
+- detected sentiment
+- current CSAT score, when available
+- an AI-generated conversation summary
+- `Accept` and `Decline` actions
+
+This gives the agent immediate context before they commit to the work.
+
+## Teams
+
+Teams are how CXM groups agents for routing and queue ownership.
+
+Each tenant includes a built-in default team that can be used immediately. The default team covers active routable agents and gives every tenant a fallback queue from day one.
+
+In addition, operations leaders can create custom teams for real support structures such as:
+
+- Billing
+- Retention
+- Technical Support
+- VIP Support
+- After-hours Coverage
+
+In **Settings > Teams**, admins and owners can:
+
+- create a team
+- name and describe the team
+- assign agents to the team
+- assign team leads to supervise the team
+- use that team as a routing target
+
+Agents can belong to more than one team when needed.
+
+Team leads then use those teams to supervise queue work, reassign conversations, and manage day-to-day team operations.
+
+In the conversation model, ownership can be:
+
+- direct to an `agent`
+- assigned to a `team`
+
+When a conversation is assigned to a team, CXM routes live work to eligible ready agents in that team according to the tenant routing policy.
+
+## AI Assistants and Channel Routing
+
+### Assigning an AI Assistant to a Phone Number
+
+Phone-number routing is managed in **Settings > Phone Management**.
+
+For each voice number, CXM lets you choose:
+
+- which voice AI Assistant answers that number
+- what should happen when the AI Assistant decides to hand the call off
+
+The handoff behavior can be configured as:
+
+- `End call`
+- `Send call to a phone number`
+- `AI Assistant determines handoff destination`
+
+This means each inbound number can have its own customer experience and routing behavior. For example:
+
+- a sales number can use one AI Assistant
+- a support number can use another
+- an emergency or escalation line can transfer to a specific destination number
+
+### What Happens on an Inbound Call
+
+When a customer calls a configured number:
+
+1. CXM identifies the tenant and the voice AI Assistant assigned to that number.
+2. The AI Assistant answers the call.
+3. CXM resolves the caller to an existing contact when possible.
+4. CXM reuses the current non-closed conversation for that contact, or creates a new one.
+5. The AI Assistant handles the call.
+6. If handoff is needed, CXM routes the conversation to the correct team or agent.
+
+The same conversation remains the operational record before, during, and after handoff.
+
+## Categories and Category-Based Routing
+
+### Categories Configuration
+
+Categories are configured as a tenant taxonomy. A category set can contain nested categories so support organizations can model broad groups and more specific subtypes in one structure.
+
+Examples:
+
+- Billing
+- Billing > Refunds
+- Billing > Failed Payment
+- Technical Support
+- Technical Support > Login Issues
+- Technical Support > Connectivity
+
+Category taxonomies are managed in the tenant configuration layer and can be assigned to AI Assistants.
+
+### Categories Used by AI Assistants
+
+Each AI Assistant can be configured with:
+
+- a primary category taxonomy for normal conversation analysis
+- a handoff category taxonomy for escalation-focused classification
+
+This lets the same AI Assistant do two useful jobs:
+
+- classify the customer issue for reporting and queue visibility
+- classify the handoff reason for routing
+
+### How CXM Determines Categories
+
+As the conversation develops, the AI Assistant continuously analyzes the customer request and the current exchange to determine:
+
+- what the customer needs
+- which category best matches the request
+- whether the category should change as new information appears
+
+The detected category then becomes part of the live operational context. It can appear in:
+
+- the conversation record
+- the routing offer shown to agents
+- queues and views
+- analytics and reporting
+
+### Routing a Category to a Team
+
+Category routing connects classification to operations.
+
+In **Routing Configuration**, admins can map categories to teams. For example:
+
+- `Billing > Refunds` routes to `Billing`
+- `Technical Support > Connectivity` routes to `Technical Support`
+- `VIP Support` routes to `VIP Support`
+
+When the AI Assistant determines the active category and a handoff is required, CXM uses that mapping to select the routing target team.
+
+If no explicit category mapping exists, CXM falls back to the tenant default routing target, typically the default team.
+
+This is what turns AI understanding into practical queue direction.
+
+## Example Operating Flows
+
+### Chat Flow
+
+1. A customer starts a chat.
+2. CXM resolves the customer to an existing contact or creates a new one.
+3. The AI Assistant handles the issue first.
+4. CXM categorizes the conversation and updates the summary.
+5. If the issue needs a human, CXM routes it to the mapped team.
+6. A ready agent receives the screen pop, accepts it, and continues in the same conversation.
+
+### Voice Flow
+
+1. A customer calls a configured support number.
+2. The phone number selects the assigned voice AI Assistant.
+3. CXM resolves the caller and opens or resumes the correct conversation.
+4. The AI Assistant speaks with the caller and classifies the issue.
+5. If handoff is needed, CXM routes the conversation to the right team or agent.
+6. The selected agent accepts the voice offer and joins the live conversation context.
+
+## Why This Model Matters
+
+CXM is designed so AI and human support do not operate as separate systems.
+
+Instead:
+
+- AI Assistants handle first response and routine resolution
+- teams and agents operate from the same conversation record
+- routing uses AI understanding, not just channel arrival order
+- CRM context stays connected to live CCaaS operations
+
+That is what makes CXM both a CCaaS platform and a conversation-centric CRM.

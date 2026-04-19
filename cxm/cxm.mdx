@@ -1,11 +1,11 @@
 ---
 title: "Crescendo CXM"
-description: "User guide for Crescendo CXM as an AI-first, AI-native CCaaS and CRM."
+description: "User guide for Crescendo CXM as an AI-first, AI-native Customer Experience Management."
 ---
 
 # Crescendo CXM
 
-Crescendo CXM is an AI-first, AI-native CCaaS and CRM built around one core object: the conversation. It brings live chat, voice, email, customer context, AI handling, and human agent operations into one workspace so teams can run customer support from a single system.
+Crescendo CXM is an AI-first, AI-native Customer Experience Management system built around one core object: the conversation. It brings live chat, voice, email, customer context, AI handling, and human agent operations into one workspace so teams can run customer support from a single system.
 
 CXM is designed to let AI handle the large share of routine work first, then route the right conversations to the right human team or agent when human judgment is needed.
 
@@ -76,7 +76,7 @@ Users can have one or more roles. Roles determine what they can see, configure, 
 | `user` | Non-agent user who can work with AI configuration and supporting workflows, but does not process routed customer conversations. |
 | `viewer` | Read-only access for oversight and reporting. |
 
-Role assignment is managed in **Settings > Users**. A user can be invited or edited there, and one person can hold multiple roles when needed.
+Role assignment is managed in **Settings \> Users**. A user can be invited or edited there, and one person can hold multiple roles when needed.
 
 ## Conversations
 
@@ -88,14 +88,11 @@ That means a live call is not treated as a disconnected event. It is tied to the
 
 ### Conversation Lifecycle
 
-Every conversation moves through a simple lifecycle:
+Every conversation moves through a simple life cycle:
 
-1. `Open`
-   The conversation is active and can receive customer and agent activity.
-2. `Resolved`
-   The issue appears solved, but follow-up is still expected or possible.
-3. `Closed`
-   The conversation is finalized.
+1. `Open` The conversation is active and can receive customer and agent activity.
+2. `Resolved` The issue appears solved, but follow-up is still expected or possible.
+3. `Closed` The conversation is finalized.
 
 Operationally:
 
@@ -158,7 +155,7 @@ At that point:
 
 For voice, the AI Assistant can continue holding the call until a human agent joins. For chat, the customer remains in the same conversation while routing and takeover happen in the background.
 
-## Agent Operations
+## Agent Experience
 
 ### Log In and Sign Out
 
@@ -231,7 +228,7 @@ In addition, operations leaders can create custom teams for real support structu
 - VIP Support
 - After-hours Coverage
 
-In **Settings > Teams**, admins and owners can:
+In **Settings \> Teams**, admins and owners can:
 
 - create a team
 - name and describe the team
@@ -254,7 +251,7 @@ When a conversation is assigned to a team, CXM routes live work to eligible read
 
 ### Assigning an AI Assistant to a Phone Number
 
-Phone-number routing is managed in **Settings > Phone Management**.
+Phone-number routing is managed in **Settings \> Phone Management**.
 
 For each voice number, CXM lets you choose:
 
@@ -295,11 +292,11 @@ Categories are configured as a tenant taxonomy. A category set can contain neste
 Examples:
 
 - Billing
-- Billing > Refunds
-- Billing > Failed Payment
+- Billing \> Refunds
+- Billing \> Failed Payment
 - Technical Support
-- Technical Support > Login Issues
-- Technical Support > Connectivity
+- Technical Support \> Login Issues
+- Technical Support \> Connectivity
 
 Category taxonomies are managed in the tenant configuration layer and can be assigned to AI Assistants.
 
@@ -376,5 +373,3 @@ Instead:
 - teams and agents operate from the same conversation record
 - routing uses AI understanding, not just channel arrival order
 - CRM context stays connected to live CCaaS operations
-
-That is what makes CXM both a CCaaS platform and a conversation-centric CRM.

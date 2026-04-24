@@ -205,6 +205,22 @@ Categories help CXM:
 - organize queues
 - report on support demand and outcomes
 
+## Crescendo Telephony Architecture
+
+![Telephony Architecture](./assets/telephony_architecture.png)
+
+## Voice call flow
+
+- Customer dials support number, call arrives and gets routed via Crescendo voice to a tenant-scoped phone number.
+-	Ingress + identity - SIP/RTP anchors the call; ANI lookup identifies the caller (or flags them anonymous/B2B/dedup) before AI engages.
+-	AI Voice Concierge Agent(s) handles the call - primary resolver, not deflection. Runs STT/TTS/S2S/VAD for audio, Autonomous AI Layer for reasoning, Agentic Knowledge for grounded answers, skills for actions and Agentic Integration Hub for taking actions in external systems, with live recording, transcript and real-time summarization, human-in-the-loop handoff rules and compliance guardrails throughout.
+-	Universal Queue routes to a human when needed - skills, priority, smart escalation, warm transfer, or callback.
+-	Agent takes over in SPOG - WebRTC softphone, Expert Assist coaching, live transcript, mid-call actions/macros. One-click takeover from the AI.
+-	Customer Relationship updates live - profile, journey history, and ticket stay current with auto status transitions, AI nudges, and AI-assigned severity and priority.
+-	Data and analytics reviews every call - AI summary, AutoQA+ at 100% coverage, Voice of Customer themes, all exposed through Agentic Analytics APIs.
+
+![Voice Call Flow](./assets/voice_call_flow.png)
+
 ## Why This Model Matters
 
 You should be able to design your voice experience around the customer journey, not around a specific telephony vendor.

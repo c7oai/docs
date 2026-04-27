@@ -10,6 +10,8 @@ Updated April 27, 2026
 
 It is important to correlate Chat Assistant conversations with shopping cart activity and orders.
 
+This guide uses Shopify Flow and order tags as the primary attribution path. Shopify's native UTM reports rely on the storefront analytics pixel, which is routinely blocked by ad blockers, privacy extensions, browser tracking prevention (Safari ITP, Firefox ETP, Brave), and shoppers who decline the cookie banner — so assistant-attributed orders can drop out of those reports. UTM reports also attribute by browser session, so an order placed in a later session or after the shopper shared the cart link can lose its source. After the widget writes Crescendo attribution to the Shopify cart, Shopify carries that note to the order and Flow converts it into a visible order tag. This avoids relying on Shopify's analytics pixel, but still requires the widget and cart update to run before checkout — see [Known limitations](#known-limitations).
+
 Three steps enable a standard Shopify report showing how many orders were created after a customer talked to the Chat Assistant:
 
 * install Chat Assistant Widget
@@ -22,7 +24,7 @@ Add the **Crescendo AI Assistant** to your storefront as described here: [Enable
 
 # Create Shopify Flow to convert order notes to tags
 
-The Chat Assistant Widget attaches attribution to the cart after a shopper starts a conversation. It can also mark sessions when assistant links include `utm_source=crescendo`.
+The Chat Assistant Widget attaches attribution to the cart after a shopper starts a conversation. It can also mark the cart when assistant links include `utm_source=crescendo`.
 
 When the widget receives the `c7o:bot:conversationStart` event, it calls `updateCartTags()`. That function updates the Shopify cart through `/cart/update.js` with note `crescendo` and cart attributes such as:
 
@@ -54,7 +56,7 @@ Make sure that it looks like this. The screenshot shows the **Order created** tr
 
 # Verify attribution
 
-Before relying on the report, place a test order. The widget must be installed, the cart must exist or be resolvable before checkout, and the shopper session must be marked by a conversation start or by a link with `utm_source=crescendo`.
+Before relying on the report, place a test order. The widget must be installed, the cart must exist or be resolvable before checkout, and the cart must be marked by a conversation start or by a link with `utm_source=crescendo`.
 
 * Start a new assistant conversation, or click an assistant-provided product/cart/checkout link that includes `utm_source=crescendo`.
 * Add a product to the cart and place a test order.
@@ -74,7 +76,7 @@ The `crescendo` order tag can be used for more than the **Orders fulfilled by da
 # Known limitations
 
 * Attribution starts only after the widget loads and marks the session.
-* Link-click attribution requires assistant links to include `utm_source=crescendo`.
+* Link-click cart attribution requires assistant links to include `utm_source=crescendo`.
 * Anonymous shoppers do not provide customer identity context.
 * If a shopper checks out before a cart exists or before the cart update completes, the order may not be tagged.
 * Browser storage or script blockers can prevent attribution from persisting across pages.

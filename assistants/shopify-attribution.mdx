@@ -1,36 +1,87 @@
 ---
 title: Shopify Attribution
-description: Step-by-step instructions for merchants to create tags for shopping carts and orders to demonstrate attribution of Chat Assistant to sales of the products.
+description: Step-by-step instructions for merchants to create tags for shopping carts and orders to demonstrate attribution of the Chat Assistant to product sales.
 icon: 'code'
 ---
 
+Updated April 27, 2026
+
 # Sales Attribution
 
-It is important to be able to correlate Chat Assistant conversations with consequent Shopping Cart activities and Orders. 
+It is important to correlate Chat Assistant conversations with shopping cart activity and orders.
 
-Just three simple steps enable to create a standard Shopify Report demonstrating how many orders were created after a customer talked to Chat Assistant":
+This guide uses Shopify Flow and order tags as the primary attribution path. Shopify's native UTM reports rely on the storefront analytics pixel, which is routinely blocked by ad blockers, privacy extensions, browser tracking prevention (Safari ITP, Firefox ETP, Brave), and shoppers who decline the cookie banner — so assistant-attributed orders can drop out of those reports. UTM reports also attribute by browser session, so an order placed in a later session or after the shopper shared the cart link can lose its source. After the widget writes Crescendo attribution to the Shopify cart, Shopify carries that note to the order and Flow converts it into a visible order tag. This avoids relying on Shopify's analytics pixel, but still requires the widget and cart update to run before checkout — see [Known limitations](#known-limitations).
+
+Three steps enable a standard Shopify report showing how many orders were created after a customer talked to the Chat Assistant:
+
 * install Chat Assistant Widget
 * create Shopify Flow to convert order notes to tags
-* add a filter to out-of-box Shopify Report
+* add a filter to a standard Shopify report
 
 # Install Chat Assistant Widget
 
-Add the **Crescendo.ai Bot** to your storefront as described here: [Enable Bot on your Shopify Store](./enable-bot-shopify-store.md).
+Add the **Crescendo AI Assistant** to your storefront as described here: [Enable AI Assistant on your Shopify Store](./enable-assistant-shopify-store).
 
 # Create Shopify Flow to convert order notes to tags
 
-The Chat Assistant Widget attaches notes to each shopping cart and order that was created after a customer comminicated with the Chat Assistant. In order to use standatd out-of-box Shopify Reports it is required to convert Order Notes to Tags.
+The Chat Assistant Widget attaches attribution to the cart after a shopper starts a conversation. It can also mark the cart when assistant links include `utm_source=crescendo`.
 
-You will receive a .flow file that contains the required flow. 
+When the widget receives the `c7o:bot:conversationStart` event, it calls `updateCartTags()`. That function updates the Shopify cart through `/cart/update.js` with note `crescendo` and cart attributes such as:
 
-* Add Flow app in Shopify Admin, if it is not yet added
-* Import this .flow file
-* Make sure that it looks like this: ![flow](./assets/shopify_flow_attribution.png)
+| Attribute             | Description                                   |
+|-----------------------|-----------------------------------------------|
+| `bot_conversation_id` | Conversation ID, when available               |
+| `bot_source`          | Attribution source, usually `crescendo`       |
+| `bot_timestamp`       | Time the cart attribution was written         |
+| `bot_initiated`       | Time the conversation-start event was handled |
 
-# Add a filter to out-of-box Shopify Report
+Shopify carries the cart note to the order. To use standard Shopify reports, convert that order note to an order tag with Shopify Flow.
 
-* Open a standard Analytics / Report named **"Orders fulfilled by day"**
-* Go to the bottom right of the screen and add a filter **Order tags contains crescendo**
+1. Add the **Shopify Flow** app in Shopify Admin if it is not already installed.
+2. Create a new workflow.
+3. Use **Order created** as the trigger.
+4. Add a condition: **Order note includes `crescendo`**.
+5. On the **True** path, add **Add order tags** with tag `crescendo`.
+6. Turn on the workflow.
+
+Make sure that it looks like this. The screenshot shows the **Order created** trigger, the **Order note includes `crescendo`** condition, and the **Add order tags** action.
+
+![Shopify Flow attribution workflow](./assets/shopify_flow_attribution.png)
+
+# Add a filter to a standard Shopify Report
+
+* Open a standard Analytics report, such as **Orders fulfilled by day** or **Orders over time**.
+* Add a filter: **Order tags contains `crescendo`**.
+* Save the report if you want to reuse it.
+
+# Verify attribution
+
+Before relying on the report, place a test order. The widget must be installed, the cart must exist or be resolvable before checkout, and the cart must be marked by a conversation start or by a link with `utm_source=crescendo`.
+
+* Start a new assistant conversation, or click an assistant-provided product/cart/checkout link that includes `utm_source=crescendo`.
+* Add a product to the cart and place a test order.
+* Open the order in Shopify Admin and confirm the order note contains `crescendo` or the order additional details include Crescendo attribution attributes.
+* Confirm the Shopify Flow run succeeded.
+* Confirm the order has the `crescendo` tag and appears in the filtered report.
+
+# Reporting beyond the basic filter
+
+The `crescendo` order tag can be used for more than the **Orders fulfilled by day** report:
+
+* Revenue attributed to the assistant: filter sales reports by **Order tags contains `crescendo`**.
+* Conversion comparison: compare tagged orders with total storefront orders for the same date range.
+* Product or collection performance: filter product sales reports by the `crescendo` tag.
+* Orders by conversation intent: combine Shopify tagged orders with Crescendo conversation reporting outside Shopify.
+
+# Known limitations
+
+* Attribution starts only after the widget loads and marks the session.
+* Link-click cart attribution requires assistant links to include `utm_source=crescendo`.
+* Anonymous shoppers do not provide customer identity context.
+* If a shopper checks out before a cart exists or before the cart update completes, the order may not be tagged.
+* Browser storage or script blockers can prevent attribution from persisting across pages.
+* Custom storefronts or custom cart flows must still allow Shopify cart updates before checkout.
 
 ## You’re done!
-Now you can watch Shopify Reports and see how many orders were placed after a conversations with Chat Assistant
+
+Now you can use Shopify reports to see how many orders were placed after a conversation with the Chat Assistant.

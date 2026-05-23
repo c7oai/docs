@@ -842,6 +842,7 @@
           "EndDatetimeUTC": { "type": ["string", "null"], "format": "date-time" },
           "Duration": { "type": "integer", "format": "int32", "description": "Duration in seconds." },
           "Escalated": { "type": ["boolean", "null"] },
+          "escalatedAt": { "type": ["integer", "null"], "format": "int64", "description": "Epoch milliseconds from `state.escalatedAt`." },
           "CSat": { "type": ["number", "null"] },
           "AgentName": { "type": ["string", "null"] },
           "AgentId": { "type": ["string", "integer", "null"] },
@@ -850,6 +851,7 @@
           "Subcategory": { "type": ["string", "null"] },
           "Tertiary": { "type": ["string", "null"] },
           "RemoteIp": { "type": ["string", "null"] },
+          "userAgent": { "type": ["string", "null"] },
           "Referrer": { "type": ["string", "null"] },
           "Media": {
             "oneOf": [
@@ -860,6 +862,9 @@
           },
           "Summary": { "type": ["string", "null"] },
           "Handoff Reason": { "type": ["string", "null"] },
+          "ticketId": { "type": ["string", "integer", "null"] },
+          "ticketUrl": { "type": ["string", "null"] },
+          "ticketKind": { "type": ["string", "null"] },
           "Input": { "type": ["string", "null"] },
           "Contact Name": { "type": ["string", "null"] },
           "Contact Email": { "type": ["string", "null"] },

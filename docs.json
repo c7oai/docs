@@ -24,7 +24,8 @@
               "assistants/enable-assistant",
               "assistants/enable-assistant-shopify-store",
               "assistants/shopify-attribution",
-              "assistants/version-control"
+              "assistants/version-control",
+              "assistants/connect-hubspot"
             ]
           }
         ]
@@ -100,4 +101,3 @@
     }
   }
 }
-

@@ -54,7 +54,7 @@ Most API routes include `tenants/{tenantId}` in the path. API keys are tenant-sc
 
 Scopes are evaluated using:
 
-- The API prefix (first segment after `/api/v1/`), for example `provisioning`, `reporting`, `voc`, `mcp`
+- The API prefix (first segment after `/api/v1/`), for example `provisioning`, `assistant`, `reporting`, `voc`, `mcp`
 - The operation type: `read` for `GET`/`HEAD`/`OPTIONS`, and `write` for everything else
 - The nested resource (the first segment after `tenants/{tenantId}/...`) for fine-grained access
 
@@ -63,6 +63,7 @@ Common scope patterns:
 | API | Read scopes (examples) | Write scopes (examples) |
 | --- | --- | --- |
 | Provisioning | `provisioning:*`, `provisioning:read`, `provisioning:users.read` | `provisioning:*`, `provisioning:users.*` |
+| Assistants | No history/polling endpoint | `assistant:write`, `assistant:*`, `assistant:bots.write`, `assistant:bots.*` |
 | Reporting | `reporting:*`, `reporting:read` | Reporting endpoints are read-only |
 | VOC | `voc:*`, `voc:read` | `voc:*`, `voc:recording.*` |
 | MCP | `mcp:*`, `mcp:read`, `mcp:bots.read` | `mcp:*`, `mcp:bots.*` |
@@ -75,6 +76,11 @@ Errors use a consistent JSON shape:
 ```json
 { "code": "BadRequest", "message": "Human-readable error message" }
 ```
+
+Unexpected host failures, including failures in the shared JSON parser, return
+HTTP 500 with `{ "message": "Internal Server Error" }` and no `code`. Assistant
+processing errors can also include conversation/message IDs and an `action`
+for your human-routing fallback. See [Send an Assistant message](./endpoint/assistant-messages).
 
 Common error codes:
 
@@ -101,6 +107,12 @@ Conventions:
 - **Audit fields on writes**: `updated` (epoch millis) and `updatedBy` are stamped automatically.
 
 Some provisioning resources support a `versions.current` object to represent the active version for that resource.
+
+### Assistants API
+
+Send customer messages and receive public replies, tags and handoff results at
+`POST /api/v1/assistant/tenants/{tenantId}/bots/{botId}/messages`. See
+[Send an Assistant message](./endpoint/assistant-messages).
 
 ### Reporting API
 

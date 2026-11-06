@@ -28,6 +28,10 @@
       "description": "Tenant-scoped provisioning resources."
     },
     {
+      "name": "Assistants",
+      "description": "Customer messages and assistant handoff results."
+    },
+    {
       "name": "Reporting",
       "description": "Reporting-friendly exports (cursor pagination)."
     },
@@ -417,6 +421,177 @@
         }
       }
     },
+    "/api/v1/assistant/tenants/{tenantId}/bots/{botId}/messages": {
+      "post": {
+        "operationId": "sendAssistantMessage",
+        "summary": "Send a customer message to an assistant",
+        "description": "Send a customer message to an assistant using a tenant API key with assistant:write or an existing equivalent write scope. The complete JSON body is limited to 10 MiB. Each processing call has a default 55-second response budget; HTTP parsing and authentication occur before that budget starts. Timeout does not cancel conversation work. Retries can execute again, and concurrent calls may produce partial/empty replies. No history/polling endpoint is exposed.",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "minLength": 1},
+            "description": "Tenant-scoped path ID; must be nonempty, cannot contain slash, and cannot be . or .. ."
+          },
+          {
+            "name": "botId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "minLength": 1},
+            "description": "Tenant-scoped path ID; must be nonempty, cannot contain slash, and cannot be . or .. ."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/AssistantMessageRequest"},
+              "example": {
+                "conversationId": "customer-chat-42",
+                "message": "Where is my order?",
+                "messageId": "customer-message-8",
+                "orderNumber": "ORDER-123",
+                "context": {
+                  "locale": "en",
+                  "customer": {"loyaltyTier": "gold"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Public assistant reply, tags and handoff outcome; partial/empty text and retained-handoff null text are valid.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AssistantMessageResult"},
+                "examples": {
+                  "active": {
+                    "value": {
+                      "conversationId": "customer-chat-42",
+                      "messageId": "customer-message-8",
+                      "state": "active",
+                      "handoff": false,
+                      "message": "I can help you check your order.",
+                      "tags": ["c7o"]
+                    }
+                  },
+                  "handoff": {
+                    "value": {
+                      "conversationId": "customer-chat-42",
+                      "messageId": "customer-message-8",
+                      "state": "handed_off",
+                      "handoff": true,
+                      "message": "A human will help.",
+                      "tags": ["c7o", "help", "c7o_handoff"],
+                      "screenPopComment": "Summary",
+                      "scriptResult": {
+                        "destination": "external",
+                        "messages": [
+                          {"id": "user", "role": "user", "content": "Question"}
+                        ],
+                        "enabled": false,
+                        "count": 0,
+                        "empty": null
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest for an invalid decoded path ID or invalid parsed request envelope, or invalid_request from assistant processing.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AssistantError"}
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated: missing, invalid, expired or wrong-tenant API key.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AssistantError"}}}
+          },
+          "403": {
+            "description": "PermissionDenied: insufficient write scope.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AssistantError"}}}
+          },
+          "404": {
+            "description": "assistant_not_found: no current bot specification.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AssistantError"}
+              }
+            }
+          },
+          "409": {
+            "description": "conversation_expired or the reserved conversation_conflict mapping.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AssistantError"}
+              }
+            }
+          },
+          "415": {
+            "description": "UnsupportedMediaType: the handler receives a Content-Type other than application/json.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AssistantError"}
+              }
+            }
+          },
+          "422": {
+            "description": "unsupported_assistant: unsupported implementation version or synchronous-text model.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AssistantError"}
+              }
+            }
+          },
+          "500": {
+            "description": "Malformed/oversized JSON, unsupported charset/content encoding, or an unexpected host failure; message-only response without a code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["message"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "message": {"type": "string", "enum": ["Internal Server Error"]}
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "assistant_error or script_result_error; action is handoff.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AssistantError"}
+              }
+            }
+          },
+          "503": {
+            "description": "service_unavailable: assistant storage or configuration is unavailable; action is handoff.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AssistantError"}
+              }
+            }
+          },
+          "504": {
+            "description": "assistant_timeout: response deadline elapsed; underlying work is not canceled; action is handoff.",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AssistantError"}
+              }
+            }
+          }
+        },
+        "tags": ["Assistants"]
+      }
+    },
     "/api/v1/reporting/tenants/{tenantId}/assistant/conversations": {
       "get": {
         "tags": ["Reporting"],
@@ -778,6 +953,69 @@
       }
     },
     "schemas": {
+      "AssistantMessageRequest": {
+        "type": "object",
+        "required": ["conversationId", "message"],
+        "additionalProperties": true,
+        "properties": {
+          "conversationId": {"type": "string", "minLength": 1, "pattern": "\\S", "description": "Must contain non-whitespace text; original value is preserved."},
+          "message": {"type": "string", "minLength": 1, "pattern": "\\S", "description": "Must contain non-whitespace text; original value is preserved."},
+          "messageId": {
+            "type": ["string", "null"],
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Nonempty caller message ID; omitted/null generates an ID."
+          },
+          "context": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Arbitrary business fields; context wins over duplicate business root keys. Null/arrays are invalid."
+          }
+        },
+        "description": "All other root fields are arbitrary business input and are preserved. No business-key allowlist."
+      },
+      "AssistantMessageResult": {
+        "type": "object",
+        "required": ["conversationId", "messageId", "state", "handoff", "message", "tags"],
+        "additionalProperties": true,
+        "properties": {
+          "conversationId": {"type": "string"},
+          "messageId": {"type": "string"},
+          "state": {
+            "type": "string",
+            "enum": ["active", "handed_off"]
+          },
+          "handoff": {"type": "boolean"},
+          "message": {
+            "type": ["string", "null"],
+            "description": "Public plain text, possibly partial/empty; null for a retained completed handoff."
+          },
+          "tags": {
+            "type": "array",
+            "items": {"type": "string"},
+            "uniqueItems": true,
+            "description": "Includes c7o; completed handoff includes c7o_handoff."
+          },
+          "screenPopComment": {"type": "string", "description": "Present on a newly processed handoff."},
+          "scriptResult": {"type": "object", "additionalProperties": true, "description": "Ticket Fields Script JSON result on a newly processed handoff."}
+        }
+      },
+      "AssistantError": {
+        "type": "object",
+        "required": ["code", "message"],
+        "additionalProperties": false,
+        "properties": {
+          "code": {"type": "string"},
+          "message": {"type": "string", "description": "Sanitized public message."},
+          "conversationId": {"type": "string"},
+          "messageId": {"type": "string"},
+          "action": {
+            "type": "string",
+            "enum": ["handoff"],
+            "description": "Assistant fallback action on processing errors at HTTP 500 or above."
+          }
+        }
+      },
       "ServiceInfo": {
         "type": "object",
         "properties": {

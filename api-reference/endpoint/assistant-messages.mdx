@@ -1,0 +1,169 @@
+---
+title: 'Send an Assistant message'
+description: 'Send a customer message and receive an assistant reply, tags and handoff result.'
+openapi: 'POST /api/v1/assistant/tenants/{tenantId}/bots/{botId}/messages'
+---
+
+Send a customer message to a configured assistant and receive its public reply,
+tags and handoff result. Your application delivers the reply and handles human
+routing when requested.
+
+## Requirements
+
+- Use a tenant API key with `assistant:write` or an equivalent write scope.
+- Configure your assistant for implementation version `v7` or `v8` and a model
+  that supports synchronous text responses.
+- Send JSON and use a stable conversation ID for each customer conversation.
+
+## Request
+
+`POST /api/v1/assistant/tenants/{tenantId}/bots/{botId}/messages`
+
+Use `Authorization: Bearer <apiKey>` for the path tenant and
+`Content-Type: application/json`. The intended permission is tenant-wide
+`assistant:write`; the existing `assistant:*`, `assistant:bots.write` and
+`assistant:bots.*` scope conventions also permit this operation.
+
+```json
+{
+  "conversationId": "customer-chat-42",
+  "message": "Where is my order?",
+  "messageId": "customer-message-8",
+  "orderNumber": "ORDER-123",
+  "context": {
+    "locale": "en",
+    "customer": { "loyaltyTier": "gold" }
+  }
+}
+```
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `conversationId` | Yes | Stable caller-supplied conversation ID; nonempty string. |
+| `message` | Yes | Customer message; nonempty string. |
+| `messageId` | No | Nonempty caller message ID; omitted/null generates an ID. |
+| `context` | No | JSON object containing arbitrary business input; null/arrays are invalid. |
+| Other root fields | No | Arbitrary business input passed to configured input mapping. |
+
+The complete JSON body is limited to **10 MiB (10,485,760 bytes)**. Required
+strings and supplied message IDs cannot contain only whitespace; original
+values are preserved. Tenant and bot path IDs cannot be empty, contain `/`, or
+be `.` or `..`. Business fields have no accepted-key allowlist and are not
+stripped. When business root input and `context` contain the same key, context
+wins. Use the bot's configured input mapping to make values prompt-visible.
+
+## Success response
+
+HTTP 200 returns the assistant result:
+
+```json
+{
+  "conversationId": "customer-chat-42",
+  "messageId": "customer-message-8",
+  "state": "active",
+  "handoff": false,
+  "message": "I can help you check your order.",
+  "tags": ["c7o"]
+}
+```
+
+`state` is `active` or `handed_off`. `message` is public plain text and can be
+partial or an empty string. Visible assistant text associated with tool calls
+is retained; raw tool metadata and empty stubs are excluded. Tags are
+deduplicated and include `c7o`.
+
+A newly completed handoff returns `handoff: true`, `state: "handed_off"`, the
+`c7o_handoff` tag, `screenPopComment` and object `scriptResult`. A later call to
+a conversation whose handoff is already completed returns `message: null`
+without repeating customer-message or handoff-script processing. Configured
+CRM/external handoff behavior follows your assistant configuration.
+
+For example, a newly completed handoff can return:
+
+```json
+{
+  "conversationId": "customer-chat-42",
+  "messageId": "customer-message-8",
+  "state": "handed_off",
+  "handoff": true,
+  "message": "A human will help.",
+  "tags": [
+    "c7o",
+    "help",
+    "c7o_handoff"
+  ],
+  "screenPopComment": "Summary",
+  "scriptResult": {
+    "destination": "external",
+    "messages": [
+      {
+        "id": "user",
+        "role": "user",
+        "content": "Question"
+      }
+    ],
+    "enabled": false,
+    "count": 0,
+    "empty": null
+  }
+}
+```
+
+`screenPopComment` is a plain-text conversation note without the transcript.
+`scriptResult` contains your configured Ticket Fields Script's JSON result, so
+its business fields depend on your script. A missing script returns `{}`.
+
+## Response budget and retries
+
+Each assistant processing call has a **default 55-second response budget**.
+HTTP body parsing and authentication happen before this budget starts. A
+timeout ends your response wait and returns HTTP 504; underlying work may continue, including
+provider effects and persistence. There is no later result through the timed-out
+response and no HTTP history/polling endpoint in this API phase.
+
+Retries may process a message again, even when `messageId` is repeated.
+Concurrent same-instance requests use native supersession and can yield
+partial/empty replies; separate instances can both process. Clients should
+choose their retry and fallback policy with these semantics in mind.
+
+## Errors
+
+Authentication, validation and assistant processing errors use
+`{ "code": "...", "message": "..." }`. Unexpected host failures return HTTP
+500 with `{ "message": "Internal Server Error" }` and no `code`. Shared-parser
+failures use that same response, including malformed/oversized JSON and
+unsupported charset/content encoding. Assistant processing errors also preserve
+available `conversationId`, `messageId` and `action`. Messages are sanitized;
+provider exceptions, stack traces and internal descriptions are not exposed.
+
+| HTTP | Code | Meaning |
+| --- | --- | --- |
+| 400 | `BadRequest` | Invalid decoded path IDs or invalid parsed request envelope. |
+| 400 | `invalid_request` | Assistant processing arguments are invalid. |
+| 401 | `Unauthenticated` | Missing, invalid, expired or wrong-tenant API key. |
+| 403 | `PermissionDenied` | The key does not authorize this operation. |
+| 404 | `assistant_not_found` | No current bot specification exists. |
+| 409 | `conversation_expired` | Retained transcript exists but live context has expired; use a new conversation ID. |
+| 409 | `conversation_conflict` | Reserved conversation-conflict error. |
+| 415 | `UnsupportedMediaType` | The handler receives a Content-Type other than application/json. |
+| 422 | `unsupported_assistant` | Assistant version/model does not support synchronous text processing. |
+| 500 | No code | Shared-parser or unexpected host failure; message is `Internal Server Error`. |
+| 502 | `assistant_error` | Initialization, processing or scoped work failed. |
+| 502 | `script_result_error` | Handoff Ticket Fields Script failed or returned invalid JSON. |
+| 503 | `service_unavailable` | Assistant storage/configuration work failed. |
+| 504 | `assistant_timeout` | The response deadline elapsed; work may still continue. |
+
+Assistant processing errors with HTTP status 500 or above include `action: "handoff"` for your
+application's human-routing fallback, for example:
+
+```json
+{
+  "code": "assistant_timeout",
+  "message": "The assistant did not complete within the response deadline.",
+  "conversationId": "customer-chat-42",
+  "messageId": "customer-message-8",
+  "action": "handoff"
+}
+```
+
+Machine-readable contract: [Platform API OpenAPI](../openapi.json).

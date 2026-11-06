@@ -47,6 +47,10 @@
             ]
           },
           {
+            "group": "Assistants",
+            "pages": ["api-reference/endpoint/assistant-messages"]
+          },
+          {
             "group": "Reporting",
             "pages": ["api-reference/endpoint/reporting-botconv", "api-reference/endpoint/reporting-vocconv"]
           },

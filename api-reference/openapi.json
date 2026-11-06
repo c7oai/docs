@@ -425,7 +425,7 @@
       "post": {
         "operationId": "sendAssistantMessage",
         "summary": "Send a customer message to an assistant",
-        "description": "Send a customer message to an assistant using a tenant API key with assistant:write or an existing equivalent write scope. The complete JSON body is limited to 10 MiB. Each processing call has a default 55-second response budget; HTTP parsing and authentication occur before that budget starts. Timeout does not cancel conversation work. Retries can execute again, and concurrent calls may produce partial/empty replies. No history/polling endpoint is exposed.",
+        "description": "Send a customer message to an assistant using a tenant API key with assistant:write or an existing equivalent write scope. The complete JSON body is limited to 10 MiB. Each processing call has a default 55-second response budget; HTTP parsing and authentication occur before that budget starts. Timeout does not cancel conversation work. Retries can execute again, and concurrent calls may produce partial/empty replies.",
         "parameters": [
           {
             "name": "tenantId",

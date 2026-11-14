@@ -130,15 +130,16 @@ choose their retry and fallback policy with these semantics in mind.
 
 Authentication, validation and assistant processing errors use
 `{ "code": "...", "message": "..." }`. Unexpected host failures return HTTP
-500 with `{ "message": "Internal Server Error" }` and no `code`. Shared-parser
-failures use that same response, including malformed/oversized JSON and
-unsupported charset/content encoding. Assistant processing errors also preserve
+500 with `{ "message": "Internal Server Error" }` and no `code`. Malformed JSON
+returns 400 `BadRequest` with `Request body must contain valid JSON`, without
+echoing your input. Oversized JSON and unsupported charset/content encoding
+retain the generic 500 response. Assistant processing errors also preserve
 available `conversationId`, `messageId` and `action`. Messages are sanitized;
 provider exceptions, stack traces and internal descriptions are not exposed.
 
 | HTTP | Code | Meaning |
 | --- | --- | --- |
-| 400 | `BadRequest` | Invalid decoded path IDs or invalid parsed request envelope. |
+| 400 | `BadRequest` | Malformed JSON, invalid decoded path IDs or invalid parsed request envelope. |
 | 400 | `invalid_request` | Assistant processing arguments are invalid. |
 | 401 | `Unauthenticated` | Missing, invalid, expired or wrong-tenant API key. |
 | 403 | `PermissionDenied` | The key does not authorize this operation. |
@@ -147,7 +148,7 @@ provider exceptions, stack traces and internal descriptions are not exposed.
 | 409 | `conversation_conflict` | Reserved conversation-conflict error. |
 | 415 | `UnsupportedMediaType` | The handler receives a Content-Type other than application/json. |
 | 422 | `unsupported_assistant` | Assistant version/model does not support synchronous text processing. |
-| 500 | No code | Shared-parser or unexpected host failure; message is `Internal Server Error`. |
+| 500 | No code | Oversized JSON, unsupported charset/content encoding or unexpected host failure; message is `Internal Server Error`. |
 | 502 | `assistant_error` | Initialization, processing or scoped work failed. |
 | 502 | `script_result_error` | Handoff Ticket Fields Script failed or returned invalid JSON. |
 | 503 | `service_unavailable` | Assistant storage/configuration work failed. |

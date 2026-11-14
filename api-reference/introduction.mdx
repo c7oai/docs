@@ -43,6 +43,9 @@ curl -sS \
   Prefer the `Authorization` header whenever possible. Query parameters can be logged or stored in browser history.
 </Note>
 
+Send a single string value. Repeating `bearer_token` or using array/object bracket
+syntax returns `401 Unauthenticated` before the API key is looked up.
+
 ## Tenant scoping
 
 Most API routes include `tenants/{tenantId}` in the path. API keys are tenant-scoped:

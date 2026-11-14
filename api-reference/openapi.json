@@ -502,7 +502,7 @@
             }
           },
           "400": {
-            "description": "BadRequest for an invalid decoded path ID or invalid parsed request envelope, or invalid_request from assistant processing.",
+            "description": "BadRequest for malformed JSON, an invalid decoded path ID or invalid parsed request envelope, or invalid_request from assistant processing.",
             "content": {
               "application/json": {
                 "schema": {"$ref": "#/components/schemas/AssistantError"}
@@ -550,7 +550,7 @@
             }
           },
           "500": {
-            "description": "Malformed/oversized JSON, unsupported charset/content encoding, or an unexpected host failure; message-only response without a code.",
+            "description": "Oversized JSON, unsupported charset/content encoding, or an unexpected host failure; message-only response without a code.",
             "content": {
               "application/json": {
                 "schema": {

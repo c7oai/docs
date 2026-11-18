@@ -16,6 +16,6 @@ curl -sS \
   "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/assistant/conversations/$CRESCENDO_CONVERSATION_ID"
 ```
 
-The response includes `botVersion`. Its value is `null` when the stored legacy reporting document does not contain revision metadata.
+The response includes `BotVersion`. Its value is `null` when the stored legacy reporting document does not contain revision metadata.
 
 If the conversation ID is not present for the tenant, the endpoint returns `404 Not Found`.

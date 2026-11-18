@@ -1122,7 +1122,7 @@
           "TenantID": { "type": ["string", "null"] },
           "BotID": { "type": ["string", "null"] },
           "BotName": { "type": ["string", "null"] },
-          "botVersion": {
+          "BotVersion": {
             "type": ["string", "null"],
             "description": "Stored bot revision; null for a legacy reporting document without revision metadata."
           },
@@ -1160,7 +1160,7 @@
           "Contact Email": { "type": ["string", "null"] },
           "Contact Phone": { "type": ["string", "null"] }
         },
-        "required": ["ID", "TenantID", "BotID", "BotName", "botVersion", "Datetime", "EndDatetime", "DatetimeUTC", "EndDatetimeUTC", "Duration"]
+        "required": ["ID", "TenantID", "BotID", "BotName", "BotVersion", "Datetime", "EndDatetime", "DatetimeUTC", "EndDatetimeUTC", "Duration"]
       },
       "BotConversationReportingResponse": {
         "type": "object",

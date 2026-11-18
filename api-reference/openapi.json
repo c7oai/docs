@@ -451,6 +451,7 @@
                 "conversationId": "customer-chat-42",
                 "message": "Where is my order?",
                 "messageId": "customer-message-8",
+                "botVersion": "current",
                 "orderNumber": "ORDER-123",
                 "context": {
                   "locale": "en",
@@ -471,6 +472,7 @@
                     "value": {
                       "conversationId": "customer-chat-42",
                       "messageId": "customer-message-8",
+                      "botVersion": "17",
                       "state": "active",
                       "handoff": false,
                       "message": "I can help you check your order.",
@@ -481,6 +483,7 @@
                     "value": {
                       "conversationId": "customer-chat-42",
                       "messageId": "customer-message-8",
+                      "botVersion": "17",
                       "state": "handed_off",
                       "handoff": true,
                       "message": "A human will help.",
@@ -518,7 +521,7 @@
             "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AssistantError"}}}
           },
           "404": {
-            "description": "assistant_not_found: no current bot specification.",
+            "description": "assistant_not_found: the requested, retained, or default current bot specification is unavailable.",
             "content": {
               "application/json": {
                 "schema": {"$ref": "#/components/schemas/AssistantError"}
@@ -966,6 +969,12 @@
             "pattern": "\\S",
             "description": "Nonempty caller message ID; omitted/null generates an ID."
           },
+          "botVersion": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Bot revision selector used only when initializing a new conversation. Omission defaults to current; existing conversations keep their initialized revision."
+          },
           "context": {
             "type": "object",
             "additionalProperties": true,
@@ -976,11 +985,15 @@
       },
       "AssistantMessageResult": {
         "type": "object",
-        "required": ["conversationId", "messageId", "state", "handoff", "message", "tags"],
+        "required": ["conversationId", "messageId", "botVersion", "state", "handoff", "message", "tags"],
         "additionalProperties": true,
         "properties": {
           "conversationId": {"type": "string"},
           "messageId": {"type": "string"},
+          "botVersion": {
+            "type": ["string", "null"],
+            "description": "Concrete bot revision used for this response; null only for legacy retained data without recorded revision metadata."
+          },
           "state": {
             "type": "string",
             "enum": ["active", "handed_off"]

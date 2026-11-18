@@ -29,6 +29,7 @@ Use `Authorization: Bearer <apiKey>` for the path tenant and
   "conversationId": "customer-chat-42",
   "message": "Where is my order?",
   "messageId": "customer-message-8",
+  "botVersion": "current",
   "orderNumber": "ORDER-123",
   "context": {
     "locale": "en",
@@ -42,6 +43,7 @@ Use `Authorization: Bearer <apiKey>` for the path tenant and
 | `conversationId` | Yes | Stable caller-supplied conversation ID; nonempty string. |
 | `message` | Yes | Customer message; nonempty string. |
 | `messageId` | No | Nonempty caller message ID; omitted/null generates an ID. |
+| `botVersion` | No | Nonempty bot revision selector for a new conversation; omission uses `current`. |
 | `context` | No | JSON object containing arbitrary business input; null/arrays are invalid. |
 | Other root fields | No | Arbitrary business input passed to configured input mapping. |
 
@@ -52,6 +54,15 @@ be `.` or `..`. Business fields have no accepted-key allowlist and are not
 stripped. When business root input and `context` contain the same key, context
 wins. Use the bot's configured input mapping to make values prompt-visible.
 
+`botVersion` is used only when the `conversationId` is initialized. You can use
+`current`, `draft`, or a numbered revision such as `17`. After a conversation is
+cached or retained, it keeps its initialized revision even if a later request
+supplies a different selector. The response always reports the concrete revision
+that was used, so a request using `current` can return `"botVersion": "17"`.
+Draft content can change while retaining its revision number. Simultaneous first
+requests handled by separate service instances retain the API's existing
+concurrency behavior.
+
 ## Success response
 
 HTTP 200 returns the assistant result:
@@ -60,6 +71,7 @@ HTTP 200 returns the assistant result:
 {
   "conversationId": "customer-chat-42",
   "messageId": "customer-message-8",
+  "botVersion": "17",
   "state": "active",
   "handoff": false,
   "message": "I can help you check your order.",
@@ -70,7 +82,8 @@ HTTP 200 returns the assistant result:
 `state` is `active` or `handed_off`. `message` is public plain text and can be
 partial or an empty string. Visible assistant text associated with tool calls
 is retained; raw tool metadata and empty stubs are excluded. Tags are
-deduplicated and include `c7o`.
+deduplicated and include `c7o`. `botVersion` is the concrete revision used; it
+can be `null` only for legacy retained data without recorded revision metadata.
 
 A newly completed handoff returns `handoff: true`, `state: "handed_off"`, the
 `c7o_handoff` tag, `screenPopComment` and object `scriptResult`. A later call to
@@ -84,6 +97,7 @@ For example, a newly completed handoff can return:
 {
   "conversationId": "customer-chat-42",
   "messageId": "customer-message-8",
+  "botVersion": "17",
   "state": "handed_off",
   "handoff": true,
   "message": "A human will help.",
@@ -143,7 +157,7 @@ provider exceptions, stack traces and internal descriptions are not exposed.
 | 400 | `invalid_request` | Assistant processing arguments are invalid. |
 | 401 | `Unauthenticated` | Missing, invalid, expired or wrong-tenant API key. |
 | 403 | `PermissionDenied` | The key does not authorize this operation. |
-| 404 | `assistant_not_found` | No current bot specification exists. |
+| 404 | `assistant_not_found` | The requested, retained, or default current bot revision is unavailable. |
 | 409 | `conversation_expired` | Retained transcript exists but live context has expired; use a new conversation ID. |
 | 409 | `conversation_conflict` | Reserved conversation-conflict error. |
 | 415 | `UnsupportedMediaType` | The handler receives a Content-Type other than application/json. |

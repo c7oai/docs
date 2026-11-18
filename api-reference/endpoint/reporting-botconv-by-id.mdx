@@ -1,0 +1,21 @@
+---
+title: 'Export Assistant conversation by ID (reporting)'
+description: 'Retrieve one Assistant conversation by ID in the transcript-free reporting format.'
+openapi: 'GET /api/v1/reporting/tenants/{tenantId}/assistant/conversations/{convId}'
+---
+
+Use this endpoint when you already know the conversation ID. It searches the tenant's retained Assistant reporting records and returns the same row format as the [list endpoint](./reporting-botconv), without message content or a pagination envelope.
+
+```bash
+export CRESCENDO_TENANT_ID="tenant-alpha"
+export CRESCENDO_CONVERSATION_ID="conversation-42"
+export CRESCENDO_API_KEY="YOUR_API_KEY"
+
+curl -sS \
+  -H "Authorization: Bearer $CRESCENDO_API_KEY" \
+  "https://platform.crescendo.ai/api/v1/reporting/tenants/$CRESCENDO_TENANT_ID/assistant/conversations/$CRESCENDO_CONVERSATION_ID"
+```
+
+The response includes `botVersion`. Its value is `null` when the stored legacy reporting document does not contain revision metadata.
+
+If the conversation ID is not present for the tenant, the endpoint returns `404 Not Found`.

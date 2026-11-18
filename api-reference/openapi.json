@@ -625,6 +625,32 @@
         }
       }
     },
+    "/api/v1/reporting/tenants/{tenantId}/assistant/conversations/{convId}": {
+      "get": {
+        "tags": ["Reporting"],
+        "summary": "Export assistant conversation by ID (reporting)",
+        "description": "Returns one assistant conversation in the same reporting-friendly row format as the list endpoint, without message content.",
+        "operationId": "getReportingBotConversation",
+        "parameters": [
+          { "$ref": "#/components/parameters/tenantId" },
+          { "$ref": "#/components/parameters/convId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BotConversationRow" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthenticated" },
+          "403": { "$ref": "#/components/responses/PermissionDenied" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "503": { "$ref": "#/components/responses/Unavailable" }
+        }
+      }
+    },
     "/api/v1/reporting/tenants/{tenantId}/voc/conversations": {
       "get": {
         "tags": ["Reporting"],
@@ -788,6 +814,15 @@
         "in": "path",
         "required": true,
         "description": "Tenant identifier.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "convId": {
+        "name": "convId",
+        "in": "path",
+        "required": true,
+        "description": "Assistant conversation identifier.",
         "schema": {
           "type": "string"
         }
@@ -1087,6 +1122,10 @@
           "TenantID": { "type": ["string", "null"] },
           "BotID": { "type": ["string", "null"] },
           "BotName": { "type": ["string", "null"] },
+          "botVersion": {
+            "type": ["string", "null"],
+            "description": "Stored bot revision; null for a legacy reporting document without revision metadata."
+          },
           "Datetime": { "type": ["integer", "null"], "format": "int64", "description": "Epoch milliseconds." },
           "EndDatetime": { "type": ["integer", "null"], "format": "int64", "description": "Epoch milliseconds." },
           "DatetimeUTC": { "type": ["string", "null"], "format": "date-time" },
@@ -1121,7 +1160,7 @@
           "Contact Email": { "type": ["string", "null"] },
           "Contact Phone": { "type": ["string", "null"] }
         },
-        "required": ["ID", "TenantID", "BotID", "BotName", "Datetime", "EndDatetime", "DatetimeUTC", "EndDatetimeUTC", "Duration"]
+        "required": ["ID", "TenantID", "BotID", "BotName", "botVersion", "Datetime", "EndDatetime", "DatetimeUTC", "EndDatetimeUTC", "Duration"]
       },
       "BotConversationReportingResponse": {
         "type": "object",

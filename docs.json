@@ -52,7 +52,7 @@
           },
           {
             "group": "Reporting",
-            "pages": ["api-reference/endpoint/reporting-botconv", "api-reference/endpoint/reporting-vocconv"]
+            "pages": ["api-reference/endpoint/reporting-botconv", "api-reference/endpoint/reporting-botconv-by-id", "api-reference/endpoint/reporting-vocconv"]
           },
           {
             "group": "VOC",

@@ -6,6 +6,8 @@ openapi: 'GET /api/v1/reporting/tenants/{tenantId}/assistant/conversations'
 
 This endpoint returns Assistant conversations as reporting rows (no message content), suitable for exporting large time ranges.
 
+If you already know the conversation ID, [read that conversation directly](./reporting-botconv-by-id) without list pagination or a date range.
+
 ## Date range filtering
 
 You can specify a time range using either:

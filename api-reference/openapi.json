@@ -451,7 +451,7 @@
                 "conversationId": "customer-chat-42",
                 "message": "Where is my order?",
                 "messageId": "customer-message-8",
-                "botVersion": "17",
+                "botVersion": "current",
                 "orderNumber": "ORDER-123",
                 "context": {
                   "locale": "en",
